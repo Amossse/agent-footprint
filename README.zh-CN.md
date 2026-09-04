@@ -4,15 +4,23 @@
 
 编码 Agent 的界面通常能展示自身编辑工具产生的改动，但终端命令写入的文件可能不在变更列表里；`git diff` 也不会展示未跟踪与被忽略文件。Agent Footprint 包裹任意命令，在运行前后做确定性快照，并输出一份可审查的 Markdown 或 JSON 报告。它完全本地运行、无运行时依赖，也不会上传文件内容。
 
+![Agent Footprint 检测被 Git 忽略的文件、权限位变化和符号链接改指](https://raw.githubusercontent.com/Amossse/agent-footprint/main/docs/assets/demo.gif)
+
 ## 安装
 
 需要 Python 3.10+。
 
 ```bash
-python3 -m pip install git+https://github.com/Amossse/agent-footprint.git
+pipx install agent-footprint
 ```
 
-或克隆后本地安装：
+也可使用 pip：
+
+```bash
+python3 -m pip install agent-footprint
+```
+
+从源码安装：
 
 ```bash
 git clone https://github.com/Amossse/agent-footprint.git

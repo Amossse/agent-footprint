@@ -2,6 +2,11 @@
 
 All notable changes are documented here.
 
+## 0.1.2 - 2026-09-05
+
+- Publish the package on PyPI for one-command installation.
+- Add a verified three-change demo and repository social preview.
+
 ## 0.1.1 - 2026-09-04
 
 - Add `--live` reports for long-running interactive agent sessions.

@@ -4,15 +4,23 @@
 
 Coding-agent UIs can show edits made through their own tools, but terminal commands may write files outside that change list. `git diff` also omits untracked and ignored files. Agent Footprint wraps any command, takes deterministic before/after snapshots, and emits one reviewable Markdown or JSON report. It runs locally, has no runtime dependencies, and never sends file contents anywhere.
 
+![Agent Footprint detects an ignored file, a mode change, and a retargeted symlink](https://raw.githubusercontent.com/Amossse/agent-footprint/main/docs/assets/demo.gif)
+
 ## Install
 
 Requires Python 3.10+.
 
 ```bash
-python3 -m pip install git+https://github.com/Amossse/agent-footprint.git
+pipx install agent-footprint
 ```
 
-Or clone and install locally:
+Or use pip:
+
+```bash
+python3 -m pip install agent-footprint
+```
+
+To install from source:
 
 ```bash
 git clone https://github.com/Amossse/agent-footprint.git
