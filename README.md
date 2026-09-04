@@ -22,10 +22,18 @@ python3 -m pip install -e .
 
 ## 5-minute quick start
 
-Run your agent or any shell command after `--`:
+For an interactive agent, enable a live report and put the command after `--`:
 
 ```bash
-agent-footprint --report footprint.md -- your-agent-command
+agent-footprint --live --report footprint.md -- codex
+```
+
+The report is marked `running` and refreshes when the cumulative filesystem diff changes. It becomes `completed` when the wrapped process exits. The default polling interval is one second; use `--interval 2` if a large workspace needs less frequent scans.
+
+For exactly one report per Codex task, use its non-interactive command:
+
+```bash
+agent-footprint --report footprint.md -- codex exec "your task"
 ```
 
 Try a dependency-free example:
@@ -71,10 +79,12 @@ workspace -> snapshot -> command -> snapshot -> deterministic diff -> Markdown/J
 ## Limitations
 
 - It reports final state, not transient files created and removed during the command.
+- Live mode reports cumulative session changes; it cannot infer task boundaries inside an interactive agent.
 - It only observes the selected root. Network, database, cloud, process, and files outside that root are out of scope.
 - Empty-directory changes are not reported.
 - Concurrent unrelated writes under the root are attributed to the same run.
 - Reading and hashing large workspaces costs time and disk I/O; exclude known generated trees when needed.
+- Live mode polls because the standard library has no portable filesystem event API.
 - It detects changes but does not sandbox, approve, undo, or prove which subprocess performed them.
 
 ## Security and privacy

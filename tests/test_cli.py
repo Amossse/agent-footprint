@@ -5,6 +5,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
@@ -113,6 +114,59 @@ class AgentFootprintTest(unittest.TestCase):
         self.assertNotIn("<script>", rendered)
         self.assertNotIn("<img ", rendered)
         self.assertIn("\\n&lt;script&gt;", rendered)
+
+    def test_live_report_updates_before_command_exits(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            report_path = root / "footprint.json"
+            command = [
+                sys.executable,
+                "-m",
+                "agent_footprint",
+                "--root",
+                str(root),
+                "--json",
+                "--report",
+                str(report_path),
+                "--live",
+                "--interval",
+                "0.05",
+                "--",
+                sys.executable,
+                "-c",
+                "from pathlib import Path; import time; Path('during.txt').write_text('live'); time.sleep(1.5)",
+            ]
+            environment = os.environ.copy()
+            source = str(Path(__file__).parents[1] / "src")
+            environment["PYTHONPATH"] = (
+                source + os.pathsep + environment.get("PYTHONPATH", "")
+            )
+            process = subprocess.Popen(
+                command,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                text=True,
+                env=environment,
+            )
+            deadline = time.monotonic() + 3
+            live_report = None
+            while time.monotonic() < deadline:
+                if report_path.exists():
+                    live_report = json.loads(report_path.read_text(encoding="utf-8"))
+                    if live_report["change_count"] == 1:
+                        break
+                time.sleep(0.02)
+
+            self.assertIsNone(process.poll())
+            self.assertIsNotNone(live_report)
+            assert live_report is not None
+            self.assertEqual(live_report["status"], "running")
+            self.assertEqual(live_report["changes"][0]["path"], "during.txt")
+
+            self.assertEqual(process.wait(timeout=3), 0)
+            final_report = json.loads(report_path.read_text(encoding="utf-8"))
+            self.assertEqual(final_report["status"], "completed")
+            self.assertEqual(final_report["change_count"], 1)
 
 
 if __name__ == "__main__":

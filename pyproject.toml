@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-footprint"
-version = "0.1.0"
+version = "0.1.1"
 description = "Reveal filesystem changes that coding-agent terminal commands leave behind."
 readme = "README.md"
 requires-python = ">=3.10"

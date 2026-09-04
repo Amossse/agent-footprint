@@ -2,6 +2,13 @@
 
 All notable changes are documented here.
 
+## 0.1.1 - 2026-09-04
+
+- Add `--live` reports for long-running interactive agent sessions.
+- Mark reports as `running` or `completed` and write them atomically.
+- Exclude live report files from their own filesystem diff.
+- Document `codex exec` for one report per task.
+
 ## 0.1.0 - 2026-09-04
 
 - Initial local command wrapper with before/after filesystem snapshots.

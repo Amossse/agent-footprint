@@ -22,10 +22,18 @@ python3 -m pip install -e .
 
 ## 5 分钟快速开始
 
-在 `--` 后放入 Agent 或任意命令：
+交互式 Agent 使用实时报告，并在 `--` 后放入命令：
 
 ```bash
-agent-footprint --report footprint.md -- your-agent-command
+agent-footprint --live --report footprint.md -- codex
+```
+
+报告会标记为 `running`，累计文件差异变化时自动刷新；被包裹进程退出后变为 `completed`。默认每秒检查一次，大型工作区可用 `--interval 2` 降低频率。
+
+如果希望每个 Codex 任务独立生成一份报告，请使用非交互命令：
+
+```bash
+agent-footprint --report footprint.md -- codex exec "你的任务"
 ```
 
 用零依赖示例验证：
@@ -71,10 +79,12 @@ agent-footprint --fail-on-change -- your-read-only-command  # 检测到写入时
 ## 已知限制
 
 - 只报告最终状态，无法发现命令运行中创建后又删除的临时文件。
+- 实时模式记录整个会话的累计变化，无法识别交互式 Agent 内部的任务边界。
 - 只观察指定根目录；网络、数据库、云端、进程及目录外文件不在范围内。
 - 不报告空目录变化。
 - 并发发生的其他写入也会归入同一次报告。
 - 大型工作区的读取与哈希会产生时间和磁盘 I/O 开销，可排除已知生成目录。
+- 标准库没有跨平台文件事件接口，因此实时模式采用轮询。
 - 工具只检测，不提供沙箱、审批、撤销，也不能证明具体由哪个子进程完成写入。
 
 ## 安全与隐私
